@@ -5,7 +5,15 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import col, func, select
 
 from app.api.deps import CurrentUser, SessionDep
-from app.models import Item, ItemCreate, ItemPublic, ItemsPublic, ItemUpdate, Message
+from app.modules.common.schemas import Message
+from app.modules.items import service as item_service
+from app.modules.items.models import (
+    Item,
+    ItemCreate,
+    ItemPublic,
+    ItemsPublic,
+    ItemUpdate,
+)
 
 router = APIRouter(prefix="/items", tags=["items"])
 
@@ -64,10 +72,9 @@ def create_item(
     """
     Create new item.
     """
-    item = Item.model_validate(item_in, update={"owner_id": current_user.id})
-    session.add(item)
-    session.commit()
-    session.refresh(item)
+    item = item_service.create_item(
+        session=session, item_in=item_in, owner_id=current_user.id
+    )
     return item
 
 
