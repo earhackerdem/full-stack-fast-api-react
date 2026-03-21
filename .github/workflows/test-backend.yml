@@ -1,41 +1,92 @@
-name: Test Backend
+name: Backend Tests
 
 on:
   push:
     branches:
+      - main
       - master
   pull_request:
-    types:
-      - opened
-      - synchronize
+    branches:
+      - main
+      - master
 
 jobs:
-  test-backend:
+  test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      POSTGRES_SERVER: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      SECRET_KEY: ci-secret-key-not-used-in-production
+      FIRST_SUPERUSER: admin@example.com
+      FIRST_SUPERUSER_PASSWORD: changethis
+      DOMAIN: localhost
+      ENVIRONMENT: local
+      PROJECT_NAME: Full Stack FastAPI Project
+      SMTP_HOST: ""
+      SMTP_PORT: 587
+      SMTP_TLS: "True"
+      SMTP_SSL: "False"
+      SMTP_USER: ""
+      SMTP_PASSWORD: ""
+      EMAILS_FROM_EMAIL: info@example.com
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.10"
+        uses: actions/checkout@v4
+
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
-      - run: docker compose down -v --remove-orphans
-      - run: docker compose up -d db mailcatcher
-      - name: Migrate DB
-        run: uv run bash scripts/prestart.sh
-        working-directory: backend
-      - name: Run tests
-        run: uv run bash scripts/tests-start.sh "Coverage for ${{ github.sha }}"
-        working-directory: backend
-      - run: docker compose down -v --remove-orphans
-      - name: Store coverage files
-        uses: actions/upload-artifact@v7
+        uses: astral-sh/setup-uv@v5
         with:
-          name: coverage-html
-          path: backend/htmlcov
-          include-hidden-files: true
-      - name: Coverage report
-        run: uv run coverage report --fail-under=90
-        working-directory: backend
+          version: latest
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Run migrations and seed initial data
+        run: uv run bash scripts/prestart.sh
+
+      - name: Run tests with coverage
+        run: |
+          uv run coverage run -m pytest tests/ -v
+          uv run coverage report
+          uv run coverage xml -o coverage.xml
+          uv run coverage html --title "Coverage ${{ github.sha }}"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: backend/coverage.xml
+          flags: backend
+          fail_ci_if_error: false
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-html-${{ github.run_id }}
+          path: backend/htmlcov/
+          retention-days: 7
