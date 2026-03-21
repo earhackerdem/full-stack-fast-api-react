@@ -11,6 +11,11 @@ if ! command -v python3 &>/dev/null; then
   exit 1
 fi
 
+if [ ! -f .env.example ]; then
+  echo "Error: .env.example not found. Run from the project root."
+  exit 1
+fi
+
 cp .env.example .env
 
 generate_secret() {
