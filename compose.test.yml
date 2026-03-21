@@ -19,9 +19,6 @@ services:
 
   prestart-test:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
     depends_on:
       db-test:
         condition: service_healthy

@@ -21,9 +21,11 @@ setup:
 	@bash scripts/setup.sh
 
 dev:
+	docker compose build backend
 	docker compose watch
 
 up:
+	docker compose build backend
 	docker compose up -d --wait backend mailcatcher
 
 down:
@@ -36,6 +38,7 @@ logs:
 	docker compose logs -f
 
 test:
+	$(COMPOSE_TEST) build backend-test
 	$(COMPOSE_TEST) up -d --wait backend-test mailcatcher
 	$(COMPOSE_TEST) run --rm playwright bunx playwright test; \
 	EXIT_CODE=$$?; \
@@ -43,6 +46,7 @@ test:
 	exit $$EXIT_CODE
 
 test-backend:
+	$(COMPOSE_TEST) build backend-test
 	$(COMPOSE_TEST) up -d --wait backend-test
 	$(COMPOSE_TEST) exec backend-test bash scripts/tests-start.sh; \
 	EXIT_CODE=$$?; \
