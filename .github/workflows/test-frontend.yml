@@ -30,6 +30,12 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      mailcatcher:
+        image: sj26/mailcatcher
+        ports:
+          - 1025:1025
+          - 1080:1080
+
     env:
       POSTGRES_SERVER: localhost
       POSTGRES_PORT: 5432
@@ -42,14 +48,15 @@ jobs:
       DOMAIN: localhost
       ENVIRONMENT: local
       PROJECT_NAME: Full Stack FastAPI Project
-      SMTP_HOST: ""
-      SMTP_PORT: 587
-      SMTP_TLS: "True"
+      SMTP_HOST: localhost
+      SMTP_PORT: 1025
+      SMTP_TLS: "False"
       SMTP_SSL: "False"
       SMTP_USER: ""
       SMTP_PASSWORD: ""
       EMAILS_FROM_EMAIL: info@example.com
       VITE_API_URL: http://localhost:8000
+      MAILCATCHER_HOST: http://localhost:1080
 
     steps:
       - name: Checkout
