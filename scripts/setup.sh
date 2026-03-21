@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 if [ -f .env ]; then
   echo ".env already exists. Delete it first to re-run setup."

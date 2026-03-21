@@ -27,28 +27,23 @@ Open your browser at:
 | `make setup` | Copy `.env.example` to `.env` and generate secrets |
 | `make dev` | Start the full stack with hot-reload (`docker compose watch`) |
 | `make up` | Start backend + mailcatcher only (for local frontend dev) |
-| `make down` | Stop all containers and remove volumes |
+| `make down` | Stop all containers (preserves volumes) |
+| `make clean` | Stop all containers and remove volumes (destructive) |
 | `make logs` | Follow logs from all services |
-| `make test` | Run E2E tests via Playwright Docker container |
-| `make test-backend` | Run backend unit tests |
+| `make test` | Run E2E tests via Playwright against isolated test database |
+| `make test-backend` | Run backend unit tests against isolated test database |
 | `make generate-client` | Regenerate the frontend API client from OpenAPI schema |
 
 ### Running E2E Tests
 
-E2E tests require a clean database to produce reliable results. The recommended workflow is:
+Tests run against an isolated test database (`db-test`) so they never touch your dev data. You can run tests even while `make dev` is running — there are no port conflicts.
 
 ```bash
-make down   # remove containers and volumes (clean database)
-make test   # start backend + mailcatcher, then run Playwright
+make test           # run all E2E tests via Playwright
+make test-backend   # run backend unit tests
 ```
 
-If `make dev` is already running in another terminal, you can run `make test` directly from a second terminal without stopping it. However, running `make down` first ensures the database is clean and avoids failures caused by accumulated test data from previous runs.
-
-To run a single test file without tearing down the stack:
-
-```bash
-docker compose run --rm playwright bunx playwright test tests/login.spec.ts
-```
+Test services are automatically cleaned up after each run.
 
 ---
 
