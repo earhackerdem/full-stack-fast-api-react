@@ -76,15 +76,13 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
   const mutation = useMutation({
     mutationFn: (data: FormData) =>
       UsersService.updateUser({ userId: user.id, requestBody: data }),
-    onSuccess: () => {
+    onSuccess: async () => {
       showSuccessToast("User updated successfully")
+      await queryClient.invalidateQueries({ queryKey: ["users"] })
       setIsOpen(false)
       onSuccess()
     },
     onError: handleError.bind(showErrorToast),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] })
-    },
   })
 
   const onSubmit = (data: FormData) => {

@@ -78,17 +78,37 @@ services:
       timeout: 5s
       retries: 5
 
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
   playwright:
     build:
+      context: .
+      dockerfile: frontend/Dockerfile.playwright
       args:
         - VITE_API_URL=http://backend-test:8000
+        - NODE_ENV=production
+    ipc: host
     depends_on:
       backend-test:
         condition: service_healthy
       mailcatcher:
         condition: service_started
+    env_file:
+      - .env
     environment:
       - VITE_API_URL=http://backend-test:8000
+      - MAILCATCHER_HOST=http://mailcatcher:1080
+      - PLAYWRIGHT_HTML_HOST=0.0.0.0
+      - CI=${CI}
+    volumes:
+      - ./frontend/blob-report:/app/frontend/blob-report
+      - ./frontend/test-results:/app/frontend/test-results
+    ports:
+      - 9323:9323
 
 networks:
   traefik-public:

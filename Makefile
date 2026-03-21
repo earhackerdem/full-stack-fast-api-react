@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-COMPOSE_TEST := docker compose -f compose.yml -f compose.override.yml -f compose.test.yml
+COMPOSE_TEST := docker compose -f compose.yml -f compose.test.yml
 
 .PHONY: help setup dev up down clean logs test test-backend generate-client
 
