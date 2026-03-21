@@ -42,7 +42,7 @@ test:
 	$(COMPOSE_TEST) up -d --wait backend-test mailcatcher
 	$(COMPOSE_TEST) run --rm playwright bunx playwright test; \
 	EXIT_CODE=$$?; \
-	$(COMPOSE_TEST) down; \
+	$(COMPOSE_TEST) rm -sf db-test prestart-test backend-test mailcatcher; \
 	exit $$EXIT_CODE
 
 test-backend:
@@ -50,7 +50,7 @@ test-backend:
 	$(COMPOSE_TEST) up -d --wait backend-test
 	$(COMPOSE_TEST) exec backend-test bash scripts/tests-start.sh; \
 	EXIT_CODE=$$?; \
-	$(COMPOSE_TEST) down; \
+	$(COMPOSE_TEST) rm -sf db-test prestart-test backend-test; \
 	exit $$EXIT_CODE
 
 generate-client:
