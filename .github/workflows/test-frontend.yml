@@ -66,6 +66,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           version: latest
+          prune-cache: false
 
       - name: Install backend dependencies
         working-directory: backend
