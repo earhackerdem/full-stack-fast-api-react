@@ -23,14 +23,14 @@ generate_secret() {
 }
 
 SECRET=$(generate_secret)
-sed -i.bak "s|^SECRET_KEY=changethis|SECRET_KEY=$SECRET|" .env
-
 PW=$(generate_secret)
-sed -i.bak "s|^FIRST_SUPERUSER_PASSWORD=changethis|FIRST_SUPERUSER_PASSWORD=$PW|" .env
-
 PGPW=$(generate_secret)
-sed -i.bak "s|^POSTGRES_PASSWORD=changethis|POSTGRES_PASSWORD=$PGPW|" .env
 
+sed -i.bak \
+  -e "s|^SECRET_KEY=changethis|SECRET_KEY=$SECRET|" \
+  -e "s|^FIRST_SUPERUSER_PASSWORD=changethis|FIRST_SUPERUSER_PASSWORD=$PW|" \
+  -e "s|^POSTGRES_PASSWORD=changethis|POSTGRES_PASSWORD=$PGPW|" \
+  .env
 rm -f .env.bak
 
 echo ".env created with generated secrets."

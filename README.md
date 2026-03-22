@@ -6,6 +6,8 @@
 
 ## Quick Start
 
+> **Prerequisites:** [Docker](https://docs.docker.com/get-docker/) with Compose v2+
+
 ```bash
 git clone <repo-url> my-project
 cd my-project
