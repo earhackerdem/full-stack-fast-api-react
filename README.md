@@ -4,6 +4,51 @@
 <a href="https://github.com/fastapi/full-stack-fastapi-template/actions?query=workflow%3A%22Test+Backend%22" target="_blank"><img src="https://github.com/fastapi/full-stack-fastapi-template/workflows/Test%20Backend/badge.svg" alt="Test Backend"></a>
 <a href="https://coverage-badge.samuelcolvin.workers.dev/redirect/fastapi/full-stack-fastapi-template" target="_blank"><img src="https://coverage-badge.samuelcolvin.workers.dev/fastapi/full-stack-fastapi-template.svg" alt="Coverage"></a>
 
+## Quick Start
+
+> **Prerequisites:** [Docker](https://docs.docker.com/get-docker/) with Compose v2+
+
+```bash
+git clone <repo-url> my-project
+cd my-project
+make setup   # generates .env with random secrets from .env.example
+make dev     # starts the full stack with hot-reload
+```
+
+Open your browser at:
+
+- Frontend: http://localhost:5173
+- Backend API docs: http://localhost:8000/docs
+- Mailcatcher (email preview): http://localhost:1080
+- Adminer (database UI): http://localhost:8080
+
+### Available Commands
+
+| Command | Description |
+|---|---|
+| `make setup` | Copy `.env.example` to `.env` and generate secrets |
+| `make dev` | Start the full stack with hot-reload (`docker compose watch`) |
+| `make up` | Start backend + mailcatcher only (for local frontend dev) |
+| `make down` | Stop all containers (preserves volumes) |
+| `make clean` | Stop all containers and remove volumes (destructive) |
+| `make logs` | Follow logs from all services |
+| `make test` | Run E2E tests via Playwright against isolated test database |
+| `make test-backend` | Run backend unit tests against isolated test database |
+| `make generate-client` | Regenerate the frontend API client from OpenAPI schema |
+
+### Running E2E Tests
+
+Tests run against an isolated test database (`db-test`) so they never touch your dev data. You can run tests even while `make dev` is running — there are no port conflicts.
+
+```bash
+make test           # run all E2E tests via Playwright
+make test-backend   # run backend unit tests
+```
+
+Test services are automatically cleaned up after each run.
+
+---
+
 ## Technology Stack and Features
 
 - ⚡ [**FastAPI**](https://fastapi.tiangolo.com) for the Python backend API.
